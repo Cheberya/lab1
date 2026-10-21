@@ -1,16 +1,3 @@
-import re
-
-
-def tokenize(text):
-    pattern = r'\d+(?:\.\d*)?|\.\d+|[+\-*/()]'
-    tokens = re.findall(pattern, text)
-
-    if ''.join(tokens).replace(' ', '') != text.replace(' ', ''):
-        raise ValueError("Недопустимые символы в выражении")
-
-    return tokens
-
-
 def calculate(text):
     tokens = tokenize(text)
     pos = 0
@@ -19,7 +6,7 @@ def calculate(text):
         nonlocal pos
         result = term()
 
-        while pos < len(tokens) and tokens[pos] in ('+', '-'):
+        while pos < len(tokens) and tokens[pos] in ('+', '-'):ы
             op = tokens[pos]
             pos += 1
             right = term()
@@ -44,7 +31,7 @@ def calculate(text):
                 result *= right
             else:
                 if right == 0:
-                    raise ZeroDivisionError("Деление на ноль")
+                    raise ZeroDivisionError('Деление на ноль')
                 result /= right
 
         return result
@@ -53,49 +40,49 @@ def calculate(text):
         nonlocal pos
 
         if pos >= len(tokens):
-            raise ValueError("Неожиданный конец выражения")
+            raise ValueError('Неожиданный конец выражения')
 
         token = tokens[pos]
-
-        if token == '-':
-            pos += 1
-            return -factor()
 
         if token == '+':
             pos += 1
             return factor()
+
+        if token == '-':
+            pos += 1
+            return -factor()
 
         if token == '(':
             pos += 1
             result = expression()
 
             if pos >= len(tokens) or tokens[pos] != ')':
-                raise ValueError("Не хватает закрывающей скобки")
+                raise ValueError('Не хватает закрывающей скобки')
 
             pos += 1
             return result
 
         if token == ')':
-            raise ValueError("Лишняя закрывающая скобка")
+            raise ValueError('Лишняя закрывающая скобка')
 
-        if re.fullmatch(r'\d+(?:\.\d*)?|\.\d+', token):
-            pos += 1
-            return float(token)
+        try:
+            result = float(token)
+        except ValueError:
+            raise ValueError('Некорректное выражение')
 
-        raise ValueError("Некорректное выражение")
+        pos += 1
+        return result
 
     result = expression()
 
     if pos != len(tokens):
-        raise ValueError("Некорректное выражение")
+        raise ValueError('Некорректное выражение')
 
     return result
 
 
 try:
-    text = input("Введите выражение: ")
-    result = calculate(text)
-    print("Результат:", result)
-
+    text = input('Введите выражение: ')
+    print('Результат:', calculate(text))
 except (ValueError, ZeroDivisionError) as error:
-    print("Ошибка:", error)
+    print('Ошибка:', error)
